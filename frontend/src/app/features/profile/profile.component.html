@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-gradient-to-b from-slate-950 via-zinc-950 to-slate-900 px-4 py-8 text-slate-100 sm:px-6">
+  <div class="mx-auto max-w-5xl space-y-6">
+    <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Profile</p>
+        <h1 class="text-2xl font-semibold text-white">Personal Overview</h1>
+      </div>
+      <a
+        routerLink="/dashboard"
+        class="rounded-lg border border-cyan-300/30 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-500/20"
+      >
+        Back to Dashboard
+      </a>
+    </div>
+
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <h2 class="text-lg font-semibold text-white">Account</h2>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Name</p>
+          <p class="mt-1 text-lg text-slate-100">{{ currentUser()?.name ?? 'MindFlow User' }}</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Email</p>
+          <p class="mt-1 text-lg text-slate-100">{{ currentUser()?.email ?? 'unknown@example.com' }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid gap-4 sm:grid-cols-3">
+      @for (card of statCards(); track card.label) {
+        <article class="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <p class="text-xs uppercase tracking-wide text-slate-400">{{ card.label }}</p>
+          <p class="mt-2 text-2xl font-semibold" [class]="card.accent">{{ card.value }}</p>
+        </article>
+      }
+    </section>
+
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <h2 class="text-lg font-semibold text-white">My Hobby</h2>
+      <p class="mt-1 text-sm text-slate-400">Save your favorite relaxing break activity for quick access in Break Mode.</p>
+
+      <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+        <input
+          type="text"
+          class="w-full rounded-xl border border-white/15 bg-slate-900/60 px-4 py-2.5 text-slate-100 placeholder:text-slate-500 focus:border-cyan-300/50 focus:outline-none"
+          placeholder="Reading, Gaming, Drawing..."
+          [value]="hobbyInput()"
+          (input)="hobbyInput.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="rounded-xl bg-cyan-500/20 px-5 py-2.5 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/30"
+          (click)="saveHobby()"
+        >
+          Save Hobby
+        </button>
+      </div>
+
+      <p class="mt-3 text-sm text-emerald-200/90">
+        Current hobby: <span class="font-semibold">{{ hobby() || 'Not set yet' }}</span>
+      </p>
+    </section>
+  </div>
+</div>
+

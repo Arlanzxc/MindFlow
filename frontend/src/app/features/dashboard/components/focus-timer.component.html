@@ -1,0 +1,121 @@
+<section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+  <div
+    class="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/90 to-slate-800/60 p-8 shadow-[0_10px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+  >
+    <p class="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Focus Timer</p>
+    <h2 class="mt-2 text-2xl font-semibold text-white">Deep Work Session</h2>
+    <p class="mt-1 text-sm text-slate-400">Protect your attention. Pause only when necessary.</p>
+
+    <div class="mt-8 grid place-items-center">
+      <div
+        class="grid h-72 w-72 place-items-center rounded-full border border-cyan-300/25 bg-slate-900/80 shadow-[0_0_80px_rgba(56,189,248,0.22)]"
+        [class.border-rose-300/35]="isEmergencyMode()"
+        [class.shadow-[0_0_80px_rgba(244,63,94,0.22)]]="isEmergencyMode()"
+      >
+        <div class="text-center">
+          <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Time Remaining</p>
+          <p
+            class="mt-1 text-6xl font-semibold tracking-tight text-cyan-200 transition"
+            [class.text-rose-200]="isEmergencyMode()"
+          >
+            {{ timerLabel() }}
+          </p>
+          <p class="mt-2 text-sm text-slate-500">Snoozes used: {{ snoozeCount() }} / 3</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <button
+        type="button"
+        class="rounded-lg bg-cyan-500/20 px-5 py-2.5 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="isRunning() || isSyncing()"
+        (click)="start()"
+      >
+        {{ isSyncing() ? 'Syncing...' : 'Start' }}
+      </button>
+
+      <button
+        type="button"
+        class="rounded-lg bg-white/10 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-white/20"
+        [disabled]="!isRunning()"
+        (click)="pause()"
+      >
+        Pause
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-slate-200">Emergency Mode</p>
+          <p class="text-xs text-slate-400">Disables break transition while active.</p>
+        </div>
+        <button
+          type="button"
+          class="relative h-8 w-14 rounded-full border transition"
+          [class.border-rose-300/60]="isEmergencyMode()"
+          [class.bg-rose-500/40]="isEmergencyMode()"
+          [class.border-white/20]="!isEmergencyMode()"
+          [class.bg-white/10]="!isEmergencyMode()"
+          (click)="toggleEmergencyMode()"
+        >
+          <span
+            class="absolute left-1 top-1 h-5 w-5 rounded-full bg-white transition"
+            [class.translate-x-6]="isEmergencyMode()"
+          ></span>
+        </button>
+      </div>
+    </div>
+
+    @if (showBreakActions()) {
+      <div class="rounded-2xl border border-amber-300/20 bg-amber-400/10 p-6 backdrop-blur">
+        <p class="text-sm font-semibold text-amber-200">Session complete. Next action:</p>
+        <div class="mt-4 grid gap-3">
+          @if (canSnooze()) {
+            <button
+              type="button"
+              class="rounded-lg bg-cyan-500/20 px-4 py-2.5 text-sm font-medium text-cyan-100 transition hover:bg-cyan-500/30"
+              [disabled]="isSyncing()"
+              (click)="snooze()"
+            >
+              Snooze (+5 min)
+            </button>
+          }
+
+          <button
+            type="button"
+            class="rounded-lg px-4 py-2.5 text-sm font-medium text-white transition"
+            [class.bg-emerald-500/25]="!isEmergencyMode()"
+            [class.hover:bg-emerald-500/35]="!isEmergencyMode()"
+            [class.cursor-not-allowed]="isEmergencyMode()"
+            [class.bg-slate-700/70]="isEmergencyMode()"
+            [disabled]="isEmergencyMode() || isSyncing()"
+            (click)="takeBreak()"
+          >
+            Take a Break
+          </button>
+
+          @if (isEmergencyMode()) {
+            <p class="text-xs text-rose-200/90">Emergency Mode is enabled. Disable it to enter Break Mode.</p>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+        <p class="text-sm text-slate-300">
+          You are in active focus. Break options appear automatically at <span class="font-semibold">00:00</span>.
+        </p>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="rounded-xl border border-rose-300/25 bg-rose-500/15 px-4 py-3 text-sm text-rose-100">
+        {{ errorMessage() }}
+      </div>
+    }
+  </div>
+</section>
+

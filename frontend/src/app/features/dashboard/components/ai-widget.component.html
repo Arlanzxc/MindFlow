@@ -1,0 +1,66 @@
+<div class="fixed bottom-6 right-6 z-50">
+  @if (isOpen()) {
+    <div
+      class="mb-3 w-[22rem] overflow-hidden rounded-2xl border border-cyan-300/20 bg-slate-900/70 shadow-[0_20px_80px_rgba(14,116,144,0.45)] backdrop-blur-2xl"
+    >
+      <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <div>
+          <p class="text-sm font-semibold text-cyan-100">Neutral Robot</p>
+          <p class="text-xs text-slate-400">MindFlow Assistant</p>
+        </div>
+        <button
+          type="button"
+          class="rounded-md bg-white/10 px-2 py-1 text-xs text-slate-200 transition hover:bg-white/20"
+          (click)="toggle()"
+        >
+          Close
+        </button>
+      </div>
+
+      <div #messageContainer class="max-h-80 space-y-3 overflow-y-auto px-4 py-3">
+        @for (message of messages(); track $index) {
+          <div class="flex" [class.justify-end]="message.role === 'user'">
+            <div
+              class="max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed"
+              [class.bg-cyan-500/25]="message.role === 'user'"
+              [class.text-cyan-50]="message.role === 'user'"
+              [class.bg-white/10]="message.role === 'assistant'"
+              [class.text-slate-100]="message.role === 'assistant'"
+            >
+              {{ message.text }}
+            </div>
+          </div>
+        }
+      </div>
+
+      <form class="border-t border-white/10 p-3" (ngSubmit)="send()">
+        <div class="flex gap-2">
+          <input
+            type="text"
+            class="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-300/40 focus:outline-none"
+            placeholder="I feel mentally tired..."
+            [ngModel]="inputValue()"
+            (ngModelChange)="inputValue.set($event)"
+            name="message"
+          />
+          <button
+            type="submit"
+            class="rounded-lg bg-cyan-500/25 px-3 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-500/35 disabled:cursor-not-allowed disabled:opacity-60"
+            [disabled]="isLoading()"
+          >
+            {{ isLoading() ? '...' : 'Send' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <button
+    type="button"
+    class="group grid h-14 w-14 place-items-center rounded-full border border-cyan-300/40 bg-cyan-500/20 text-cyan-100 shadow-[0_0_40px_rgba(34,211,238,0.45)] transition hover:scale-105 hover:bg-cyan-500/30"
+    (click)="toggle()"
+  >
+    <span class="text-xl">AI</span>
+  </button>
+</div>
+
