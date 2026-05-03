@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../../core/services/ai.service';
 
 interface ChatMessage {
-  role: 'user' | 'assistant';
   text: string;
+  isAi: boolean;
 }
 
 @Component({
@@ -14,62 +14,81 @@ interface ChatMessage {
   imports: [CommonModule, FormsModule],
   templateUrl: './ai-widget.component.html',
 })
-export class AiWidgetComponent {
-  @ViewChild('messageContainer') private messageContainer?: ElementRef<HTMLDivElement>;
-
-  readonly isOpen = signal(false);
-  readonly inputValue = signal('');
-  readonly isLoading = signal(false);
-  readonly messages = signal<ChatMessage[]>([
-    {
-      role: 'assistant',
-      text: 'Neutral Robot online. Describe your current focus state for guidance.',
-    },
+export class AiWidgetComponent implements OnInit, OnDestroy {
+  isOpen = signal(false);
+  messages = signal<ChatMessage[]>([
+    { text: "Hi! I'm your MindFlow AI. How can I support your focus today?", isAi: true }
   ]);
+  newMessage = signal('');
+  isTyping = signal(false);
 
-  constructor(private readonly aiService: AiService) {}
+  @ViewChild('chatScroll') private chatScroll!: ElementRef;
+  
+  // Переменная для хранения нашего таймера
+  private postureCheckInterval: any;
 
-  toggle(): void {
-    this.isOpen.update((value) => !value);
-    setTimeout(() => this.scrollToBottom(), 40);
+  constructor(private aiService: AiService) {}
+
+  ngOnInit() {
+    this.postureCheckInterval = setInterval(() => {
+      this.sendPostureCheck();
+    }, 15 * 60 * 1000); 
+
   }
 
-  send(): void {
-    const message = this.inputValue().trim();
-    if (!message || this.isLoading()) {
-      return;
+  ngOnDestroy() {
+    if (this.postureCheckInterval) {
+      clearInterval(this.postureCheckInterval);
     }
+  }
 
-    this.messages.update((current) => [...current, { role: 'user', text: message }]);
-    this.inputValue.set('');
-    this.isLoading.set(true);
+  private sendPostureCheck() {
+    const postureMessage = "🤖 Напоминание: Ты сейчас ровно сидишь? Сделай глубокий вдох, расправь плечи и выпрями спину!";
+    
+    this.messages.update(m => [...m, { text: postureMessage, isAi: true }]);
+    
+    if (!this.isOpen()) {
+      this.isOpen.set(true);
+    }
+    
+    setTimeout(() => this.scrollToBottom(), 100);
+  }
+
+  toggleChat() {
+    this.isOpen.update(v => !v);
+    if (this.isOpen()) {
+      setTimeout(() => this.scrollToBottom(), 100);
+    }
+  }
+
+  sendMessage() {
+    const text = this.newMessage().trim();
+    if (!text || this.isTyping()) return;
+
+    this.messages.update(m => [...m, { text, isAi: false }]);
+    this.newMessage.set('');
+    this.isTyping.set(true);
     this.scrollToBottom();
 
-    this.aiService.chat(message).subscribe({
-      next: (response) => {
-        this.isLoading.set(false);
-        this.messages.update((current) => [...current, { role: 'assistant', text: response.reply }]);
+    
+    this.aiService.chat(text).subscribe({
+      next: (res) => {
+        this.messages.update(m => [...m, { text: res.reply, isAi: true }]);
+        this.isTyping.set(false);
         this.scrollToBottom();
       },
       error: () => {
-        this.isLoading.set(false);
-        this.messages.update((current) => [
-          ...current,
-          { role: 'assistant', text: 'Connection unstable. Use a short break and try again.' },
-        ]);
+        this.messages.update(m => [...m, { text: 'Ошибка подключения к ИИ.', isAi: true }]);
+        this.isTyping.set(false);
         this.scrollToBottom();
-      },
+      }
     });
   }
 
-  private scrollToBottom(): void {
-    requestAnimationFrame(() => {
-      const native = this.messageContainer?.nativeElement;
-      if (!native) {
-        return;
-      }
-      native.scrollTop = native.scrollHeight;
-    });
+  private scrollToBottom() {
+    if (this.chatScroll) {
+      const el = this.chatScroll.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
   }
 }
-

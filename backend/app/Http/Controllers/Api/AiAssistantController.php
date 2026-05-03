@@ -8,67 +8,33 @@ use Illuminate\Http\Request;
 
 class AiAssistantController extends Controller
 {
-    /**
-     * @var list<array{keywords: list<string>, reply: string}>
-     */
-    private const KEYWORD_REPLIES = [
-        [
-            'keywords' => ['tired', 'exhausted', 'fatigue', 'sleepy', 'drained', 'устал', 'устала', 'усталость', 'усталый', 'усталые', 'измотан'],
-            'reply' => 'Fatigue detected. A 5-minute visual break is recommended.',
-        ],
-        [
-            'keywords' => ['break', 'rest', 'pause', 'перерыв', 'отдых', 'пауза'],
-            'reply' => 'Scheduled recovery intervals improve sustained output. Initiate a short break now.',
-        ],
-        [
-            'keywords' => ['stress', 'anxious', 'overwhelmed', 'стресс', 'тревога', 'перегруз'],
-            'reply' => 'Elevated cognitive load observed. Reduce stimulus density for 3–5 minutes.',
-        ],
-        [
-            'keywords' => ['burnout', 'burn out', 'выгорание', 'выгорел'],
-            'reply' => 'Long-cycle overload pattern. Step away from the screen. Hydrate. Resume at reduced intensity.',
-        ],
-        [
-            'keywords' => ['help', 'what', 'how', 'помоги', 'что делать', 'как'],
-            'reply' => 'Maintain focus blocks, insert micro-breaks, and log session outcomes. I will monitor adherence.',
-        ],
-    ];
-
-    /**
-     * @var list<string>
-     */
-    private const NEUTRAL_TIPS = [
-        'Single-task for 25 minutes, then assess strain before continuing.',
-        'Peripheral clutter competes for attention. Clear one non-essential tab.',
-        'Hydration correlates with alertness. Consume water at regular intervals.',
-        'Ambient noise variance reduces focus stability. Consider silence or steady sound.',
-        'Posture drift increases fatigue. Reset spine alignment before the next block.',
-        'Brightness mismatch with ambient light elevates eye strain. Calibrate display output.',
-        'Task batching reduces context-switch cost. Group similar actions when possible.',
-    ];
-
     public function chat(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'message' => ['required', 'string', 'max:2000'],
+            'message' => 'required|string|max:1000',
         ]);
 
-        $normalized = mb_strtolower($validated['message'], 'UTF-8');
+        // Используем mb_strtolower для правильной работы с кириллицей
+        $message = mb_strtolower($validated['message']);
 
-        foreach (self::KEYWORD_REPLIES as $rule) {
-            foreach ($rule['keywords'] as $keyword) {
-                if (str_contains($normalized, mb_strtolower($keyword, 'UTF-8'))) {
-                    return response()->json([
-                        'persona' => 'neutral_robot',
-                        'reply' => $rule['reply'],
-                    ]);
-                }
-            }
+        if (str_contains($message, 'tired') || str_contains($message, 'устал')) {
+            $reply = "Я вижу, что ты устал. Обязательно закончи текущий блок, выпей воды и сделай разминку для глаз!";
+        } elseif (str_contains($message, 'help') || str_contains($message, 'помощь')) {
+            $reply = "Я твой ИИ-ассистент MindFlow. Я слежу за твоим фокусом. Напиши мне 'устал', 'прокрастинация' или попроси 'совет'.";
+        } elseif (str_contains($message, 'tip') || str_contains($message, 'совет')) {
+            $reply = "Совет для фокуса: Разбей задачу на микрошаги. Какой следующий символ тебе нужно напечатать? Сделай только это.";
+        } elseif (str_contains($message, 'procrastinat') || str_contains($message, 'прокрастинац') || str_contains($message, 'отвлека')) {
+            $reply = "Прокрастинация — это часто просто скрытый страх сложной задачи. Включи 'Emergency Mode', закрой ютуб и пообещай себе поработать ровно 5 минут. Импульс появится!";
+        } elseif (str_contains($message, 'joke') || str_contains($message, 'шутка')) {
+            $reply = "Почему программисты предпочитают темную тему? Потому что свет привлекает баги! 🐛";
+        } elseif (str_contains($message, 'hi') || str_contains($message, 'привет') || str_contains($message, 'здравствуй')) {
+            $reply = "Привет! Готов к продуктивной сессии? Запускай таймер, как будешь готов.";
+        } elseif (str_contains($message, 'спин') || str_contains($message, 'осанк') || str_contains($message, 'posture')) {
+            $reply = "Молодец, что следишь за спиной! Ноги ровно на полу, плечи расслаблены, монитор на уровне глаз.";
+        } else {
+            $reply = "Пока я простой ИИ и работаю по ключевым словам. Я услышал: '{$validated['message']}'. Продолжай в том же духе!";
         }
 
-        return response()->json([
-            'persona' => 'neutral_robot',
-            'reply' => self::NEUTRAL_TIPS[array_rand(self::NEUTRAL_TIPS)],
-        ]);
+        return response()->json(['reply' => $reply]);
     }
 }

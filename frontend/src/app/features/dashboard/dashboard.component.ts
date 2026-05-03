@@ -6,11 +6,13 @@ import { BreakActivity, BreakMenuComponent } from './components/break-menu.compo
 import { FocusTimerComponent } from './components/focus-timer.component';
 import { SchulteTableComponent } from './components/schulte-table.component';
 import { UserPreferencesService } from '../../core/services/user-preferences.service';
+import { EyeExercisesComponent } from './components/eye-exercises.component';
+import { PhysicalWarmupComponent } from './components/physical-warmup.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FocusTimerComponent, SchulteTableComponent, BreakMenuComponent, AiWidgetComponent, RouterLink],
+  imports: [FocusTimerComponent, SchulteTableComponent, BreakMenuComponent, AiWidgetComponent, EyeExercisesComponent, PhysicalWarmupComponent, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {

@@ -4,12 +4,13 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { LoginComponent } from './features/auth/login.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { RegisterComponent } from './features/auth/register.component';
+import { LandingComponent } from './features/landing/landing';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'login' },
+  { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: 'login' },
+  { path: '**', redirectTo: '' },
 ];
