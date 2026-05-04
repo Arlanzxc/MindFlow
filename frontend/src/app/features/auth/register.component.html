@@ -1,72 +1,79 @@
-<div class="mx-auto flex min-h-screen max-w-md items-center px-4 py-8">
-  <div class="w-full rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <h1 class="text-2xl font-semibold text-slate-900">Create your MindFlow account</h1>
-    <p class="mt-1 text-sm text-slate-600">Track focus and prevent burnout.</p>
+<div class="min-h-screen bg-slate-950 flex flex-col justify-center items-center text-white relative overflow-hidden px-4 py-8">
+  <div class="absolute top-1/4 right-0 w-96 h-96 bg-fuchsia-600/20 rounded-full mix-blend-multiply filter blur-[128px] animate-pulse"></div>
+  <div class="absolute bottom-1/4 left-0 w-96 h-96 bg-indigo-600/20 rounded-full mix-blend-multiply filter blur-[128px] animate-pulse"></div>
 
-    <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="relative z-10 w-full max-w-md rounded-3xl bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl border border-slate-800">
+    
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold tracking-tight text-white">Join MindFlow</h1>
+      <p class="mt-2 text-sm text-slate-400">Create an account to master your focus.</p>
+    </div>
+
+    <form class="space-y-4" [formGroup]="form" (ngSubmit)="submit()">
       <div>
-        <label for="name" class="mb-1 block text-sm font-medium text-slate-700">Name</label>
+        <label for="name" class="mb-1.5 block text-sm font-medium text-slate-300">Name</label>
         <input
           id="name"
           type="text"
           formControlName="name"
-          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
-          placeholder="Max"
+          class="w-full rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+          placeholder="How should we call you?"
         />
       </div>
 
       <div>
-        <label for="email" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+        <label for="email" class="mb-1.5 block text-sm font-medium text-slate-300">Email Address</label>
         <input
           id="email"
           type="email"
           formControlName="email"
-          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          class="w-full rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label for="password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+        <label for="password" class="mb-1.5 block text-sm font-medium text-slate-300">Password</label>
         <input
           id="password"
           type="password"
           formControlName="password"
-          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          class="w-full rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
           placeholder="Minimum 8 characters"
         />
       </div>
 
       <div>
-        <label for="password_confirmation" class="mb-1 block text-sm font-medium text-slate-700">
-          Confirm password
+        <label for="password_confirmation" class="mb-1.5 block text-sm font-medium text-slate-300">
+          Confirm Password
         </label>
         <input
           id="password_confirmation"
           type="password"
           formControlName="password_confirmation"
-          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          class="w-full rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
           placeholder="Repeat password"
         />
       </div>
 
       @if (errorMessage()) {
-        <p class="text-sm text-rose-600">{{ errorMessage() }}</p>
+        <div class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-center text-sm text-rose-400">
+          {{ errorMessage() }}
+        </div>
       }
 
       <button
         type="submit"
         [disabled]="isSubmitting()"
-        class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-70"
+        class="mt-4 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-3.5 text-sm font-bold text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] disabled:scale-100 disabled:opacity-70 cursor-pointer"
       >
-        {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
+        {{ isSubmitting() ? 'Creating account...' : 'Create Account' }}
       </button>
     </form>
 
-    <p class="mt-4 text-sm text-slate-600">
+    <p class="mt-6 text-center text-sm text-slate-400">
       Already registered?
-      <a routerLink="/login" class="font-medium text-slate-900 underline">Sign in</a>
+      <a routerLink="/login" class="font-semibold text-indigo-400 transition-colors hover:text-indigo-300">Sign in</a>
     </p>
   </div>
 </div>
-
